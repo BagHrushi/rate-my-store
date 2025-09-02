@@ -39,7 +39,7 @@ The platform supports multiple user roles (**System Administrator, Normal User, 
 ---
 
 ## ✅ Form Validations
-- **Name**: 20–60 characters  
+- **Name**: 10–60 characters  
 - **Address**: up to 400 characters  
 - **Password**: 8–16 characters, must include at least 1 uppercase letter & 1 special character  
 - **Email**: Must be valid  
