@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Sign Up</title>
+  <link rel="stylesheet" href="signup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Create Account</h1>
+
+    <!-- Sign Up Form -->
+    <form id="signupForm">
+      <label>Name (10-60 characters)</label>
+      <input id="name" required />
+
+      <label>Email</label>
+      <input id="email" type="email" required />
+
+      <label>Password (8-16 chars, 1 uppercase, 1 special)</label>
+      <input id="password" type="password" required />
+
+      <label>Address (optional)</label>
+      <textarea id="address"></textarea>
+
+      <div class="row">
+        <button type="submit">Sign Up</button>
+        <a href="login.html" class="link">Already have an account?</a>
+      </div>
+
+      
+      <div id="msg" class="alert"></div>
+    </form>
+  </div>
+
+  <script>
+    const API_BASE = '/api'; 
+
+    
+    function showMessage(msg) {
+      document.getElementById('msg').textContent = msg;
+    }
+
+    // Check if inputs are valid
+    function validateInputs(name, email, password, address) {
+     
+      if (name.length < 20 || name.length > 60) {
+        return 'Name must be 20-60 characters';
+      }
+
+      // Email format check
+      const emailCheck = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailCheck.test(email)) {
+        return 'Invalid email address';
+      }
+
+      // Password check: 8–16 chars, at least 1 uppercase, 1 special symbol
+      const passwordCheck = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_\-+={}[\]|\\:;"'<>,.?/]).{8,16}$/;
+      if (!passwordCheck.test(password)) {
+        return 'Password must be 8-16 characters, with 1 uppercase and 1 special symbol';
+      }
+
+      
+      if (address.length > 400) {
+        return 'Address is too long';
+      }
+
+      return null; 
+    }
+
+    
+    document.getElementById('signupForm').onsubmit = async (event) => {
+      event.preventDefault(); // stop normal form submit
+
+      
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const address = document.getElementById('address').value.trim();
+
+      
+      const error = validateInputs(name, email, password, address);
+      if (error) {
+        return showMessage(error);
+      }
+
+      try {
+        
+        const response = await fetch(API_BASE + '/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password, address })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          return showMessage(result.error || 'Signup failed');
+        }
+
+        
+        localStorage.setItem('token', result.token);
+        window.location = 'stores.html';
+
+      } catch (err) {
+        showMessage('Network error');
+      }
+    };
+  </script>
+</body>
+</html>
